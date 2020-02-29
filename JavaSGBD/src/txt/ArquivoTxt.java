@@ -60,13 +60,13 @@ public class ArquivoTxt {
     }
 
     /**
-     * Escritor de arquivos de texto
+     * Escritor de arquivos de texto (sobrescreve o texto anterior ou cria novo arquivo)
      *
      * @param arquivo Caminho completo do arquivo
-     * @param texto Texto a ser adicionado ao arquivo
+     * @param texto Texto a ser excrito no arquivo
      * @throws Exception
      */
-    public static void escreverNoArquivo(String arquivo, String texto) throws Exception {
+    public static void escreverNovoArquivo(String arquivo, String texto) throws Exception {
 
         FileWriter fw = new FileWriter(arquivo);
         BufferedWriter bw = new BufferedWriter(fw);
@@ -78,6 +78,29 @@ public class ArquivoTxt {
     }
 
     /**
+     * Inclui no final do arquivo (append)
+     *
+     * @param arquivo Caminho completo do arquivo
+     * @param texto Texto a ser incluído no final do arquivo
+     * @throws Exception
+     */
+    public static void incluirTextoNoArquivo(String arquivo, String texto) throws Exception {
+        List<String> linhas = lerArquivo(arquivo);
+        FileWriter fw = new FileWriter(arquivo);
+        BufferedWriter bw = new BufferedWriter(fw);
+
+        for (String linha : linhas) {
+            bw.write(linha);
+            bw.newLine();
+        }
+
+        bw.write(texto);
+        bw.newLine();
+        bw.flush();
+        bw.close();
+    }
+
+    /**
      * Substitui uma linha no arquivo de texto
      *
      * @param arquivo Caminho completo do arquivo
@@ -86,9 +109,9 @@ public class ArquivoTxt {
      * @throws Exception
      */
     public static void substituirLinha(String arquivo, String textoProcurado, String novoTexto) throws Exception {
+        List<String> linhas = lerArquivo(arquivo);
         FileWriter fw = new FileWriter(arquivo);
         BufferedWriter bw = new BufferedWriter(fw);
-        List<String> linhas = lerArquivo(arquivo);
 
         for (String linha : linhas) {
             bw.write((linha.equals(textoProcurado)) ? novoTexto : linha);
@@ -106,9 +129,9 @@ public class ArquivoTxt {
      * @throws IOException
      */
     public static void excluirLinha(String arquivo, String texto) throws Exception {
+        List<String> linhas = lerArquivo(arquivo);
         FileWriter fw = new FileWriter(arquivo);
         BufferedWriter bw = new BufferedWriter(fw);
-        List<String> linhas = lerArquivo(arquivo);
 
         for (String linha : linhas) {
             if (!linha.equals(texto)) {

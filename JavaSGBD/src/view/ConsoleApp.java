@@ -24,6 +24,8 @@
 package view;
 
 import controller.ControllerBanco;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class ConsoleApp {
 
@@ -32,13 +34,27 @@ public class ConsoleApp {
      */
     public static void main(String[] args) {
         ControllerBanco c = new ControllerBanco();
-        
+
         try {
-            if (c.criarBanco("/mnt/HD-500/projetos/sgbd-java/JavaSGBD/src", "bancoTeste")) {
-                System.out.println("Banco criado com sucesso.");
-            } else{
+
+            String dirBanco = "/mnt/HD-500/projetos/sgbd-java/JavaSGBD/test";
+            String nomeBanco = "Lalala_" + new SimpleDateFormat("yyyy-MM-dd_HHmmss").format(new Date());
+
+            if (c.criarBanco(dirBanco, nomeBanco)) {
+                System.out.println("Banco '" + nomeBanco + "' criado com sucesso.\n"
+                        + "Local do banco: " + dirBanco);
+            } else {
                 System.out.println("O banco não foi criado.");
-                
+            }
+
+            String nomeTabela = "tabelaTeste";
+            String[] campos = {"nome", "telefone", "idade"};
+            char delimitador = '|';
+
+            if (c.criarTabela(nomeTabela, campos, delimitador)) {
+                System.out.println("Tabela '" + nomeTabela + "' criada com sucesso.\n");
+            } else {
+                System.out.println("A tabela '" + nomeTabela + "' não foi criada.");
             }
         } catch (Exception e) {
             System.out.println("Opa!\n" + ((e.getMessage() == null) ? e : e.getMessage()));

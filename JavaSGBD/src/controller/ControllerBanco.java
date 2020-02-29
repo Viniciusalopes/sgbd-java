@@ -32,11 +32,19 @@ public class ControllerBanco {
 
     private Banco bd;
     private Config cfg;
+    private String arquivoIni;
+    private String arquivoTabela;
 
     public boolean criarBanco(String dirBanco, String nome) throws Exception {
         cfg = new Config();
-        bd = new Banco(cfg, dirBanco, nome);
 
+        // dirBanco/nome.ini
+        arquivoIni = dirBanco + cfg.getBarra() + nome + cfg.getBarra() + nome + ".ini";
+        if (new File(arquivoIni).exists()) {
+            throw new Exception("Banco já existe!");
+        }
+
+        bd = new Banco(cfg, dirBanco, nome);
         if (!bd.getDirBanco().exists()) {
             bd.getDirBanco().mkdirs();
         }
@@ -47,12 +55,39 @@ public class ControllerBanco {
                 + "dirBanco = " + dirBanco + "\n"
                 + "nome = " + nome + "\n";
 
-        // dirBanco/nome.ini
-        String arquivoIni = bd.getDirBanco().getCanonicalFile().toString() + cfg.getBarra() + nome + ".ini";
-        if (new File(arquivoIni).exists()) {
-            throw new Exception("Banco já existe!");
-        }
-        ArquivoTxt.escreverNoArquivo(arquivoIni, texto);
+        ArquivoTxt.escreverNovoArquivo(arquivoIni, texto);
         return true;
     }
+
+    public boolean criarTabela(String nome, String[] campos, char delimitador) throws Exception {
+        arquivoTabela = bd.getDirBanco().getCanonicalFile().toString() + cfg.getBarra() + nome + ".bd";
+        if (new File(arquivoTabela).exists()) {
+            throw new Exception("Tabela já existe!");
+        }
+
+        // Tabela
+        String texto = "ID|";
+
+        for (String campo : campos) {
+            texto += campo + delimitador;
+        }
+        texto = texto.substring(0, texto.length() - 1) + "\n"; // retira o último pipe
+        ArquivoTxt.escreverNovoArquivo(arquivoTabela, texto);
+
+        // nome.ini
+        String textoIni = "\n"
+                + "[Tabela " + nome + "]\n"
+                + "tabela.nome = " + nome + "\n"
+                + "tabela.delimitador = " + delimitador + "\n"
+                + "tabela.campos = ID, ";
+
+        for (String campo : campos) {
+            textoIni += campo + ", ";
+        }
+        textoIni = textoIni.substring(0, textoIni.length() - 1) + "\n";
+
+        ArquivoTxt.incluirTextoNoArquivo(arquivoIni, textoIni);
+        return true;
+    }
+
 }
